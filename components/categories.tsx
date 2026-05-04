@@ -1,22 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import CategoryDrawer from './CategoryDrawer';
+import { useCategory } from '@/contexts/CategoryContext';
 
 const categories = [
-  { id: 1, name: 'Vegetables', image: '/images/vegtables.png', href: '/categories/vegetables' },
-  { id: 2, name: 'Fruits', image: '/images/fruits.png', href: '/categories/fruits' },
-  { id: 3, name: 'Sweets', image: '/images/sweets.png', href: '/categories/sweets' },
-  { id: 4, name: 'Drinks', image: '/images/drinks.png', href: '/categories/drinks' },
-  { id: 5, name: 'Baby Care', image: '/images/babycare.png', href: '/categories/baby-care' },
-  { id: 6, name: 'Fresh Meat', image: '/images/meat.png', href: '/categories/fresh-meat' },
-  { id: 7, name: 'Home Care', image: '/images/homecare.png', href: '/categories/home-care' },
+  { id: 1, name: 'Vegetables', image: '/images/vegtables.png' },
+  { id: 2, name: 'Fruits', image: '/images/fruits.png' },
+  { id: 3, name: 'Sweets', image: '/images/sweets.png' },
+  { id: 4, name: 'Drinks', image: '/images/drinks.png' },
+  { id: 5, name: 'Fresh Meat', image: '/images/meat.png' },
+  { id: 6, name: 'Home Care', image: '/images/homecare.png' },
 ];
 
 export default function Categories() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const { setSelectedCategory } = useCategory();
 
   return (
     <>
@@ -35,11 +35,11 @@ export default function Categories() {
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 md:gap-4">
-          {categories.slice(0, 6).map((category) => (
-            <Link
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+          {categories.map((category) => (
+            <button
               key={category.id}
-              href={category.href}
+              onClick={() => setSelectedCategory(category.name)}
               className="group flex flex-col items-center space-y-2 transition-transform duration-200 hover:scale-105"
             >
               {/* Icon Card */}
@@ -57,12 +57,16 @@ export default function Categories() {
               <span className="text-xs md:text-sm text-gray-700 text-center font-medium group-hover:text-gray-900 transition-colors duration-200">
                 {category.name}
               </span>
-            </Link>
+            </button>
           ))}
         </div>
       </section>
 
-      <CategoryDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+      <CategoryDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        onCategorySelect={setSelectedCategory}
+      />
     </>
   );
 }

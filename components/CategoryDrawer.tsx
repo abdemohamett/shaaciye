@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
 import { X, ChevronRight } from 'lucide-react';
 
@@ -17,9 +16,10 @@ const categories = [
 interface CategoryDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  onCategorySelect?: (category: string) => void;
 }
 
-export default function CategoryDrawer({ isOpen, onClose }: CategoryDrawerProps) {
+export default function CategoryDrawer({ isOpen, onClose, onCategorySelect }: CategoryDrawerProps) {
   return (
     <>
       {/* Backdrop */}
@@ -54,11 +54,15 @@ export default function CategoryDrawer({ isOpen, onClose }: CategoryDrawerProps)
         <div className="p-4 pb-14 md:p-6 overflow-y-auto max-h-[calc(85vh-80px)] md:max-h-[calc(100vh-80px)]">
           <div className="space-y-3">
             {categories.map((category) => (
-              <Link
+              <button
                 key={category.id}
-                href={`/category/${category.name.toLowerCase().replace(' ', '-')}`}
-                onClick={onClose}
-                className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                onClick={() => {
+                  if (onCategorySelect) {
+                    onCategorySelect(category.name);
+                  }
+                  onClose();
+                }}
+                className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors group text-left"
               >
                 <div className="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100">
                   <Image
@@ -76,7 +80,7 @@ export default function CategoryDrawer({ isOpen, onClose }: CategoryDrawerProps)
                   <p className="text-sm text-gray-500">{category.count} items</p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-green-600 transition-colors" />
-              </Link>
+              </button>
             ))}
           </div>
         </div>

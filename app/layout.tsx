@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/contexts/CartContext";
+import { CategoryProvider } from "@/contexts/CategoryContext";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -34,11 +35,13 @@ export default function RootLayout({
       className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable)}
     >
       <body className="min-h-full flex flex-col pt-16 pb-14 md:pb-0">
-        <CartProvider>
-          {children}
-          <MobileNav />
-          <Footer />
-        </CartProvider>
+        <CategoryProvider>
+          <CartProvider>
+            {children}
+            <MobileNav />
+            <Footer />
+          </CartProvider>
+        </CategoryProvider>
       </body>
     </html>
   );

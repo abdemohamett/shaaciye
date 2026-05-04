@@ -15,6 +15,7 @@ interface Product {
   image: string;
   href: string;
   badge?: string;
+  category?: string;
 }
 
 const products: Product[] = [
@@ -26,6 +27,7 @@ const products: Product[] = [
     originalPrice: 1.99,
     image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400&h=400&fit=crop&q=80',
     href: '/products/fresh-tomatoes',
+    category: 'Vegetables',
   },
   {
     id: 2,
@@ -34,6 +36,7 @@ const products: Product[] = [
     price: 0.99,
     image: 'https://images.unsplash.com/photo-1528825871115-3581a5387919?w=400&h=400&fit=crop&q=80',
     href: '/products/bananas',
+    category: 'Fruits',
   },
 
   {
@@ -44,6 +47,7 @@ const products: Product[] = [
     originalPrice: 10.99,
     image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop&q=80',
     href: '/products/basmati-rice',
+    category: 'Home Care',
   },
 
   {
@@ -53,6 +57,7 @@ const products: Product[] = [
     price: 4.99,
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=400&fit=crop&q=80',
     href: '/products/cooking-oil',
+    category: 'Home Care',
   },
   {
     id: 7,
@@ -61,6 +66,7 @@ const products: Product[] = [
     price: 3.49,
     image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400&h=400&fit=crop&q=80',
     href: '/products/fresh-eggs',
+    category: 'Fresh Meat',
   },
   {
     id: 8,
@@ -69,6 +75,7 @@ const products: Product[] = [
     price: 0.89,
     image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=400&fit=crop&q=80',
     href: '/products/carrots',
+    category: 'Vegetables',
   },
   {
     id: 9,
@@ -77,6 +84,7 @@ const products: Product[] = [
     price: 1.79,
     image: 'https://images.unsplash.com/photo-1551462147-37885acc36f1?w=400&h=400&fit=crop&q=80',
     href: '/products/spaghetti-pasta',
+    category: 'Home Care',
   },
   {
     id: 10,
@@ -85,6 +93,7 @@ const products: Product[] = [
     price: 2.29,
     image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=400&fit=crop&q=80',
     href: '/products/whole-milk',
+    category: 'Drinks',
   },
   {
     id: 11,
@@ -95,6 +104,7 @@ const products: Product[] = [
     image: 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&h=400&fit=crop&q=80',
     href: '/products/green-apples',
     badge: '14% OFF',
+    category: 'Fruits',
   },
   {
     id: 12,
@@ -103,6 +113,7 @@ const products: Product[] = [
     price: 1.99,
     image: 'https://images.unsplash.com/photo-1622484212850-eb596d769edc?w=400&h=400&fit=crop&q=80',
     href: '/products/sugar',
+    category: 'Sweets',
   },
 ];
 
@@ -221,12 +232,28 @@ function ProductCard({ product }: { product: Product }) {
 
 interface ProductsProps {
   searchQuery?: string;
+  selectedCategory?: string | null;
 }
 
-export default function Products({ searchQuery = '' }: ProductsProps) {
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+export default function Products({ searchQuery = '', selectedCategory = null }: ProductsProps) {
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = !selectedCategory || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const getTitle = () => {
+    if (searchQuery && selectedCategory) {
+      return `${selectedCategory}: "${searchQuery}"`;
+    }
+    if (searchQuery) {
+      return `Search: "${searchQuery}"`;
+    }
+    if (selectedCategory) {
+      return selectedCategory;
+    }
+    return 'Best Selling';
+  };
 
   return (
     <section className="w-full px-3 py-6 md:px-6 md:py-8">
@@ -234,15 +261,15 @@ export default function Products({ searchQuery = '' }: ProductsProps) {
       <div className="flex justify-between items-center mb-5">
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-            {searchQuery ? `Search: "${searchQuery}"` : 'Best Selling'}
+            {getTitle()}
           </h2>
-          {searchQuery && (
+          {(searchQuery || selectedCategory) && (
             <p className="text-sm text-gray-500 mt-0.5">
               {filteredProducts.length} result{filteredProducts.length !== 1 ? 's' : ''}
             </p>
           )}
         </div>
-        {!searchQuery && (
+        {!searchQuery && !selectedCategory && (
           <Link
             href="/products"
             className="text-green-600 hover:text-green-700 font-medium text-sm transition-colors duration-200"

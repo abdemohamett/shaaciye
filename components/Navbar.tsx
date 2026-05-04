@@ -3,9 +3,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingCart, Search } from 'lucide-react';
+import { ShoppingCart, Search, Grid3X3 } from 'lucide-react';
 import CartDrawer from './CartDrawer';
+import CategoryDrawer from './CategoryDrawer';
 import { useCart } from '@/contexts/CartContext';
+import { useCategory } from '@/contexts/CategoryContext';
 
 interface NavbarProps {
   onSearchChange?: (query: string) => void;
@@ -13,13 +15,17 @@ interface NavbarProps {
 
 export default function Navbar({ onSearchChange }: NavbarProps) {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { totalItems } = useCart();
+  const { setSelectedCategory } = useCategory();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
-    onSearchChange(query);
+    if (onSearchChange) {
+      onSearchChange(query);
+    }
   };
 
   return (
@@ -52,8 +58,15 @@ export default function Navbar({ onSearchChange }: NavbarProps) {
         </div>
       </div>
       
-      {/* Cart Button */}
+      {/* Cart & Categories Buttons */}
       <div className="flex items-center gap-3 md:gap-4 shrink-0">
+        <button
+          onClick={() => setIsCategoriesOpen(true)}
+          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors hidden md:block"
+          aria-label="Categories"
+        >
+          <Grid3X3 className="w-6 h-6" />
+        </button>
         <button
           onClick={() => setIsCartOpen(true)}
           className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -70,6 +83,7 @@ export default function Navbar({ onSearchChange }: NavbarProps) {
     </nav>
 
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <CategoryDrawer isOpen={isCategoriesOpen} onClose={() => setIsCategoriesOpen(false)} onCategorySelect={setSelectedCategory} />
     </>
   );
 }
