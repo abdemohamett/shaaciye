@@ -3,18 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Grid3X3, ShoppingCart } from 'lucide-react';
+import { Home, Grid3X3, ShoppingCart, Package } from 'lucide-react';
 import CartDrawer from './CartDrawer';
-import CategoryDrawer from './CategoryDrawer';
 import { useCart } from '@/contexts/CartContext';
-import { useCategory } from '@/contexts/CategoryContext';
 
 export default function MobileNav() {
   const pathname = usePathname();
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const { totalItems } = useCart();
-  const { setSelectedCategory } = useCategory();
 
   return (
     <>
@@ -31,16 +27,27 @@ export default function MobileNav() {
             <span className="text-[10px] font-medium">Home</span>
           </Link>
 
-          {/* Categories */}
-          <button
-            onClick={() => setIsCategoriesOpen(true)}
+          {/* Products */}
+          <Link
+            href="/products"
             className={`flex flex-col items-center justify-center w-full h-full gap-0.5 transition-colors ${
-              isCategoriesOpen ? 'text-green-600' : 'text-gray-500 hover:text-gray-700'
+              pathname === '/products' ? 'text-green-600' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <Package className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Products</span>
+          </Link>
+
+          {/* Categories */}
+          <Link
+            href="/categories"
+            className={`flex flex-col items-center justify-center w-full h-full gap-0.5 transition-colors ${
+              pathname === '/categories' ? 'text-green-600' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <Grid3X3 className="w-5 h-5" />
             <span className="text-[10px] font-medium">Categories</span>
-          </button>
+          </Link>
 
           {/* Cart */}
           <button
@@ -63,11 +70,6 @@ export default function MobileNav() {
       </nav>
 
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-      <CategoryDrawer
-        isOpen={isCategoriesOpen}
-        onClose={() => setIsCategoriesOpen(false)}
-        onCategorySelect={setSelectedCategory}
-      />
     </>
   );
 }

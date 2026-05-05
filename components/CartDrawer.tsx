@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { X, Plus, Minus, ShoppingBag, Trash2 } from 'lucide-react';
+import { X, Plus, Minus, ShoppingBag, Trash2, Smartphone } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import CheckoutDialog from '@/components/CheckoutDialog';
 
@@ -127,6 +127,31 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 ${subtotal.toFixed(2)}
               </span>
             </div>
+
+            {/* EVC Plus Payment */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3 space-y-2">
+              <div className="flex items-center gap-2">
+                <Image
+                  src="/images/evc.png"
+                  alt="EVC Plus"
+                  width={32}
+                  height={32}
+                  className="rounded-lg"
+                />
+                <div>
+                  <h4 className="font-semibold text-green-800 text-xs">Pay with EVC Plus</h4>
+                  <p className="text-xs text-green-600">Send money to complete order</p>
+                </div>
+              </div>
+              <div className="bg-white rounded-lg p-2 flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <Smartphone className="w-3 h-3 text-green-600" />
+                  <span className="text-xs font-medium text-gray-700">EVC:</span>
+                </div>
+                <span className="text-sm font-bold text-green-700">+252 61 234 5678</span>
+              </div>
+            </div>
+
             <button
               onClick={() => {
                 onClose();

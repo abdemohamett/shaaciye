@@ -11,7 +11,7 @@ export default function Hero() {
             src="/images/mobilebanner.png"
             alt="Fresh Groceries Banner"
             fill
-            className="object-cover"
+            className="object-fill"
             priority
           />
         </div>
@@ -22,7 +22,7 @@ export default function Hero() {
             src="/images/webbanner.png"
             alt="Fresh Groceries Banner"
             fill
-            className="object-cover"
+            className="object-fill"
             priority
           />
         </div>

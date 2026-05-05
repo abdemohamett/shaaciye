@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import CategoryDrawer from './CategoryDrawer';
-import { useCategory } from '@/contexts/CategoryContext';
+import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Category {
   id: number;
@@ -12,10 +12,8 @@ interface Category {
 }
 
 export default function Categories() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const { setSelectedCategory } = useCategory();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -43,25 +41,30 @@ export default function Categories() {
           <h2 className="text-xl md:text-2xl font-bold text-gray-900">
             Categories
           </h2>
-          <button
-            onClick={() => setIsDrawerOpen(true)}
+          <Link
+            href="/categories"
             className="text-green-600 hover:text-green-700 font-medium transition-colors duration-200"
           >
             View all
-          </button>
+          </Link>
         </div>
 
         {/* Categories Grid */}
         {loading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500">Loading categories...</p>
+          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <div key={i} className="flex flex-col items-center space-y-2">
+                <Skeleton className="w-14 h-14 md:w-16 md:h-16 rounded-lg" />
+                <Skeleton className="h-3 w-12 md:w-16" />
+              </div>
+            ))}
           </div>
         ) : (
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
             {categories.map((category) => (
-              <button
+              <Link
                 key={category.id}
-                onClick={() => setSelectedCategory(category.name)}
+                href={`/categories?category=${encodeURIComponent(category.name)}`}
                 className="group flex flex-col items-center space-y-2 transition-transform duration-200 hover:scale-105"
               >
                 {/* Icon Card */}
@@ -79,16 +82,11 @@ export default function Categories() {
                 <span className="text-xs md:text-sm text-gray-700 text-center font-medium group-hover:text-gray-900 transition-colors duration-200">
                   {category.name}
                 </span>
-              </button>
+              </Link>
             ))}
           </div>
         )}
       </section>
-      <CategoryDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        onCategorySelect={setSelectedCategory}
-      />
     </>
   );
 }

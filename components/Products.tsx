@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Plus, Minus } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Product {
   id: number;
@@ -48,8 +49,8 @@ function ProductCard({ product }: { product: Product }) {
   };
 
   return (
-    <div
-      // href={product.href}
+    <Link
+      href={`/product/${product.id}`}
       className="group block bg-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden"
     >
       {/* Image Area */}
@@ -74,7 +75,6 @@ function ProductCard({ product }: { product: Product }) {
         <h3 className="text-sm font-semibold text-gray-900 leading-tight line-clamp-1">
           {product.name}
         </h3>
-        {/* <p className="text-xs text-gray-500 mt-0.5">{product.weight}</p> */}
 
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-baseline gap-1.5">
@@ -130,16 +130,17 @@ function ProductCard({ product }: { product: Product }) {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
 interface ProductsProps {
   searchQuery?: string;
   selectedCategory?: string | null;
+  showAll?: boolean;
 }
 
-export default function Products({ searchQuery = '', selectedCategory = null }: ProductsProps) {
+export default function Products({ searchQuery = '', selectedCategory = null, showAll = false }: ProductsProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -168,6 +169,9 @@ export default function Products({ searchQuery = '', selectedCategory = null }: 
   });
 
   const getTitle = () => {
+    if (showAll) {
+      return 'All Products';
+    }
     if (searchQuery && selectedCategory) {
       return `${selectedCategory}: "${searchQuery}"`;
     }
@@ -183,7 +187,7 @@ export default function Products({ searchQuery = '', selectedCategory = null }: 
   return (
     <section className="w-full px-3 py-6 md:px-6 md:py-8">
       {/* Section Header */}
-      <div className="flex justify-between items-center mb-5">
+      <div className="flex justify-between items-center mb-5 pt-8">
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-gray-900">
             {getTitle()}
@@ -194,7 +198,7 @@ export default function Products({ searchQuery = '', selectedCategory = null }: 
             </p>
           )}
         </div>
-        {!searchQuery && !selectedCategory && (
+        {!searchQuery && !selectedCategory && !showAll && (
           <Link
             href="/products"
             className="text-green-600 hover:text-green-700 font-medium text-sm transition-colors duration-200"
@@ -206,8 +210,17 @@ export default function Products({ searchQuery = '', selectedCategory = null }: 
 
       {/* Products Grid */}
       {loading ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500">Loading products...</p>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div key={i} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+              <Skeleton className="w-full aspect-square" />
+              <div className="p-3 space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-8 w-full mt-2" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : filteredProducts.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
