@@ -1,9 +1,10 @@
 'use client';
 
-import Link from 'next/link';
+import { useState } from 'react';
 import Image from 'next/image';
 import { X, Plus, Minus, ShoppingBag, Trash2 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import CheckoutDialog from '@/components/CheckoutDialog';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const cartItems = items;
   const subtotal = totalPrice;
   const itemCount = totalItems;
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   return (
     <>
@@ -125,13 +127,15 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 ${subtotal.toFixed(2)}
               </span>
             </div>
-            <Link
-              href="/checkout"
-              onClick={onClose}
+            <button
+              onClick={() => {
+                onClose();
+                setIsCheckoutOpen(true);
+              }}
               className="block w-full py-3 bg-green-600 text-white text-center font-semibold rounded-xl hover:bg-green-700 transition-colors"
             >
               Checkout
-            </Link>
+            </button>
             <button
               onClick={onClose}
               className="block w-full py-3 text-gray-600 text-center font-medium hover:text-gray-900 transition-colors"
@@ -141,6 +145,12 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           </div>
         )}
       </div>
+      
+      {/* Checkout Dialog */}
+      <CheckoutDialog 
+        isOpen={isCheckoutOpen} 
+        onClose={() => setIsCheckoutOpen(false)} 
+      />
     </>
   );
 }

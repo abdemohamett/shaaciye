@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Plus, Minus } from 'lucide-react';
@@ -10,112 +10,16 @@ interface Product {
   id: number;
   name: string;
   weight: string;
-  price: number;
-  originalPrice?: number;
+  price: string;
+  originalPrice?: string;
   image: string;
-  href: string;
   badge?: string;
-  category?: string;
+  categoryId?: number;
+  inStock: boolean;
+  category?: {
+    name: string;
+  };
 }
-
-const products: Product[] = [
-  {
-    id: 1,
-    name: 'Fresh Tomatoes',
-    weight: '1 kg',
-    price: 1.49,
-    originalPrice: 1.99,
-    image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400&h=400&fit=crop&q=80',
-    href: '/products/fresh-tomatoes',
-    category: 'Vegetables',
-  },
-  {
-    id: 2,
-    name: 'Bananas',
-    weight: '1 bunch',
-    price: 0.99,
-    image: 'https://images.unsplash.com/photo-1528825871115-3581a5387919?w=400&h=400&fit=crop&q=80',
-    href: '/products/bananas',
-    category: 'Fruits',
-  },
-
-  {
-    id: 4,
-    name: 'Basmati Rice',
-    weight: '5 kg',
-    price: 8.99,
-    originalPrice: 10.99,
-    image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop&q=80',
-    href: '/products/basmati-rice',
-    category: 'Home Care',
-  },
-
-  {
-    id: 6,
-    name: 'Cooking Oil',
-    weight: '1 L',
-    price: 4.99,
-    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=400&fit=crop&q=80',
-    href: '/products/cooking-oil',
-    category: 'Home Care',
-  },
-  {
-    id: 7,
-    name: 'Fresh Eggs',
-    weight: '12 pcs',
-    price: 3.49,
-    image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400&h=400&fit=crop&q=80',
-    href: '/products/fresh-eggs',
-    category: 'Fresh Meat',
-  },
-  {
-    id: 8,
-    name: 'Carrots',
-    weight: '500 g',
-    price: 0.89,
-    image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=400&fit=crop&q=80',
-    href: '/products/carrots',
-    category: 'Vegetables',
-  },
-  {
-    id: 9,
-    name: 'Spaghetti Pasta',
-    weight: '500 g',
-    price: 1.79,
-    image: 'https://images.unsplash.com/photo-1551462147-37885acc36f1?w=400&h=400&fit=crop&q=80',
-    href: '/products/spaghetti-pasta',
-    category: 'Home Care',
-  },
-  {
-    id: 10,
-    name: 'Whole Milk',
-    weight: '1 L',
-    price: 2.29,
-    image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=400&fit=crop&q=80',
-    href: '/products/whole-milk',
-    category: 'Drinks',
-  },
-  {
-    id: 11,
-    name: 'Green Apples',
-    weight: '1 kg',
-    price: 2.99,
-    originalPrice: 3.49,
-    image: 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&h=400&fit=crop&q=80',
-    href: '/products/green-apples',
-    badge: '14% OFF',
-    category: 'Fruits',
-  },
-  {
-    id: 12,
-    name: 'Sugar',
-    weight: '1 kg',
-    price: 1.99,
-    image: 'https://images.unsplash.com/photo-1622484212850-eb596d769edc?w=400&h=400&fit=crop&q=80',
-    href: '/products/sugar',
-    category: 'Sweets',
-  },
-];
 
 function ProductCard({ product }: { product: Product }) {
   const { items, addItem, updateQuantity, removeItem } = useCart();
@@ -127,7 +31,7 @@ function ProductCard({ product }: { product: Product }) {
       id: product.id,
       name: product.name,
       image: product.image,
-      price: product.price,
+      price: parseFloat(product.price),
     });
   };
 
@@ -175,14 +79,14 @@ function ProductCard({ product }: { product: Product }) {
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-baseline gap-1.5">
             <span className="text-base font-bold text-green-600">
-              ${product.price.toFixed(2)}
+              ${parseFloat(product.price).toFixed(2)}
             </span>
             <span className="text-xs text-green-600">
               /{product.weight.includes('kg') ? 'kg' : product.weight.includes('pcs') ? 'pcs' : product.weight.includes('L') ? 'L' : 'item'}
             </span>
             {product.originalPrice && (
               <span className="text-xs text-gray-400 line-through">
-                ${product.originalPrice.toFixed(2)}
+                ${parseFloat(product.originalPrice).toFixed(2)}
               </span>
             )}
           </div>
@@ -236,9 +140,30 @@ interface ProductsProps {
 }
 
 export default function Products({ searchQuery = '', selectedCategory = null }: ProductsProps) {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          const data = await res.json();
+          setProducts(data);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !selectedCategory || product.category === selectedCategory;
+    const matchesCategory = !selectedCategory || product.category?.name === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -280,7 +205,11 @@ export default function Products({ searchQuery = '', selectedCategory = null }: 
       </div>
 
       {/* Products Grid */}
-      {filteredProducts.length > 0 ? (
+      {loading ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">Loading products...</p>
+        </div>
+      ) : filteredProducts.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
