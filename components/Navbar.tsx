@@ -26,16 +26,17 @@ export default function Navbar({ onSearchChange }: NavbarProps) {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between w-full px-4  b/95 backdrop-blur-sm md:px-32 ">
+      <nav className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between w-full px-4 py-3 bg-white/95 backdrop-blur-sm shadow-sm md:px-32">
       {/* Logo */}
       <Link href="/" className="shrink-0">
         <Image 
-          width={120} 
-          height={37} 
+          width={160} 
+          height={50} 
           src="/images/logo.png" 
-          className="max-w-[120px] h-auto md:max-w-[100px]" 
+          className="max-w-[150px] h-auto md:max-w-[160px]" 
           alt="Grocery Gutenberg" 
           priority
+          quality={100}
         />
       </Link>
       
